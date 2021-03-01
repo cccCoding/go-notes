@@ -57,7 +57,7 @@ init 函数用于程序执行前进行包的初始化，比如初始化包里的
 
 值类型：基本数据类型 int、float、bool、string 以及数组和 struct。值类型变量直接存储值，内存通常在栈中分配。
 
-引用类型：指针、slice、map、chan、interface 等。引用类型变量存储的是一个地址，这个地址存储最终的值，内存通常在堆上分配，通过 GC 回收。
+引用类型：指针、slice、map、chan、interface、function。引用类型变量存储的是一个地址，这个地址存储最终的值，内存通常在堆上分配，通过 GC 回收。引用类型都可以用nil进行赋值
 
 ### 指针和引用
 
@@ -161,7 +161,7 @@ type Object interface {
 
 * new 和 make
 
-new(T) 和 make(T, args) 是 Go 语言内建函数，用来分配内存，但适用的类型不一样。new 为 T 类型的新值分配已置零的内存空间，并返回地址 *T，适用于值类型，如 int、数组、结构体等。make 得到的是初始化之后的 T 的引用，用来分配引用类型，只适用于 slice、map 和 channel。
+new(T) 和 make(T, args) 是 Go 语言内建函数，用来分配内存，但适用的类型不一样。new 为 T 类型的新值分配已置零的内存空间，并返回地址 *T（类型指针），适用于值类型，如 int、数组、结构体等。make 得到的是初始化之后的 T 的引用，用来分配引用类型，只适用于 slice、map 和 channel。
 
 通过 make 创建的切片可以 copy，其他方式不行。
 
@@ -343,7 +343,8 @@ r := []rune(s)
 ### 比较
 
 * 不同类型不能进行比较。
-* map、slice 和 function 属于不可比较类型，只能判断是否为 nil。
+* map、slice 和 function 属于不可比较类型，不能通过 == 比较，只能判断是否为 nil。
+* map，slice 可以参考用 reflect.DeepEqual 方法来进行比较，经过反射操作，效率低。可自己实现。
 * 数组长度是数组类型的一部分，不同长度的数组为不同类型，不能进行比较。
 * 结构体比较
   * 结构体只能比较是否相等。
@@ -353,7 +354,7 @@ r := []rune(s)
 
 ### nil 值问题
 
-nil 只能赋值给指针、channel、function、interface、map 或 slice 类型的变量。
+nil 只能赋值给引用类型的变量。
 
 `var x = nil` 会导致编译错误，因为 nil 为上述类型的零值，如果不指定变量类型，编译器猜不出来变量的具体类型，导致编译错误。
 
