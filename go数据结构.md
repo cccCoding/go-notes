@@ -163,28 +163,62 @@ s = append(s[:2], s[3:]...)    // 删除索引为2的元素
 
 ## 映射 map
 
-map 存储的是无序的键值对集合。
+Hash 表是一种巧妙并且实用的数据结构，是一个无序的键值对集合，其中所有的 key 都是不同的，通过给定的 key 可以在常数时间复杂度内检索、更新和删除对应的 value。map 其实是一个 Hash 表的引用，能够基于键快速检索出数据，键就像索引一样指向与该键关联的值。总之，map 存储的是无序的键值对集合。
 
-map 的 key 必须是可以做相等比较的类型，value 类型没有限制。
+### 创建与初始化
 
-map 是引用类型，和副本共享底层数据，这一点和 slice 相似。要得到一个不共享底层数据的 map 副本，可以创建新 map，迭代旧 map 给新 map 赋值。
+#### make 函数创建
 
-map 不是并发安全的，并发操作要加上锁。也可以 sync 包下的 Map，是并发安全的。
+```go
+m := make(map[keyType]valueType)
+```
 
-map 就是底层 hash 表的引用？
+map 的 key 必须是可以使用 `==` 运算符做比较的类型，map 的 value 没有类型限制。
 
-`var m map[string]int` 声明的 map，初始值为 nil。往值为 nil 的 map 写数据会导致 panic，应使用 make 函数为其初始化。
+#### 字面量创建
 
-`a := map[key]` 获取一个 map 中不存在的键值对时，返回值类型的零值。
+```go
+month := map[string]int{"January":1,"February":2,"March":3}
+```
 
-可以通过 `if _, ok := map[key]; ok {}` 判断键值对是否存在。
+#### nil map 和空 map
 
-`delete(map, key)` 删除键值对，当 map 不存在的相应的 key 时，不报错，相当于没操作。通过键值对是否还存在来判断删除是否成功。
+**nil map**
 
-定义 map：
+```go
+var month map[string]int	// 声明了一个 nil map
+fmt.Println(month == nil)   // 输出：true
+```
 
-1. 不推荐，map[string]Student，map 的 value student 的属性是不可以修改的
-2. 推荐，map[string]*Student，map 的 value student 的属性是可以修改的，且效率高
+nil map 是不能存取键值对的，会报 panic 错误。可以使用 make 函数为其初始化。
+
+map 的零值就是 nil，map 就是底层 Hash 表的引用。
+
+**空 map**
+
+```go
+month := make(map[string]int)	// make 函数创建空 map
+
+month := map[string]int{}		// 字面量创建空 map
+fmt.Println(month)        		// 输出：map[]
+```
+
+### 特性
+
+* `a := map[key]` 获取一个 map 中不存在的键值对时，返回值类型的零值。
+* 可以通过 `if _, ok := map[key]; ok {}` 判断键值对是否存在。
+* 可以通过内建函数`delete(map, key)` 删除键值对。当 map 不存在的相应的 key 时，不报错，相当于没操作。通过键值对是否还存在来判断删除是否成功。
+* map 的遍历是无序的。
+* 可以使用 len 函数返回 Map 中键值对的数量。
+* map 是引用类型，和副本共享底层数据，这一点和 slice 相似。在函数间传递 map 时，其实传递的是 map 的引用，不会涉及底层数据的拷贝，如果在被调用函数中修改了 map，在调用函数中也会感知到 map 的变化。要得到一个不共享底层数据的 map 副本，可以创建新的空 map，迭代旧 map 给新 map 赋值。
+* map 不是并发安全的，并发操作要加上锁。也可以使用 sync 包下并发安全的 map。
+* 定义 map 时，
+  1. 不推荐`map[string]Student`，map 的 value Student 的属性是不可以修改的。
+  2. 推荐`map[string]*Student`，map 的 value Student 的属性是可以修改的，且效率高。
+
+### 并发安全 map
+
+sync 包下的 map 是并发安全的。todo
 
 ## Mutex
 
