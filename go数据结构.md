@@ -240,6 +240,36 @@ sync 包下的 map 是并发安全的。todo
 
 无论时 Mutex 还是 RWMutex 都不会和 goroutine 进行关联，可以在一个 goroutine 申请锁，在另一个 goroutine 释放锁。
 
+## 集合 Set
+
+Go 语言里面没有集合这种数据结构。可以使用 map 实现集合 Set，map 中的 key 都是唯一的。
+
+```go
+type Set struct {
+    m map[string]bool
+}
+
+func NewSet() Set {
+	m := make(map[string]bool)
+	return Set{m: m}
+}
+
+func (s *Set) Contains(val string) bool {
+	_, ok := s.m[val]
+	return ok
+}
+
+func (s *Set) Add(val string) {
+	s.m[val] = true
+}
+
+func (s *Set) Remove(val string) {
+	delete(s.m, val)
+}
+```
+
+使用 map 作为集合的底层数据结构的好处在于，map 基于 hash 表实现，减值查找效率高。使用这种方法可以少写很多代码。
+
 ## 常见题目
 
 1. go的源码实现，各种数据结构
