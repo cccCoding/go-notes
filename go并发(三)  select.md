@@ -1,4 +1,4 @@
-# go 并发之 select
+# go 并发(三) select
 
 Go 语言最大的特色就是从语言层面支持并发。通过轻量的 goroutines 和 channel 可以简便地处理并发问题。
 

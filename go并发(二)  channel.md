@@ -1,4 +1,4 @@
-# go 并发之 channel
+# go 并发(二)  channel
 
 ## CSP 并发模型
 
